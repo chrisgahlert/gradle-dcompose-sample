@@ -1,0 +1,100 @@
+plugins {
+    id "com.chrisgahlert.gradle-dcompose-plugin" version "0.4.0"
+}
+apply plugin: 'java'
+
+sourceCompatibility = 1.6
+
+repositories {
+    // need to have maven central or a mirror in order for the plugin to be functional
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.mongodb:mongo-java-driver:3.0.0'
+    testCompile 'junit:junit:4.12'
+}
+
+dcompose {
+    // A mongo container with preserved volumes (used for running the app)
+    mongo {
+        image = 'mongo:3.3.9'
+        portBindings = ['27017']
+        preserveVolumes = true
+    }
+
+    // A mongo container without preserved volumes (used for running integration tests)
+    mongoTest {
+        image = 'mongo:3.3.9'
+        portBindings = ['27017']
+    }
+
+    // The actual app image that will be built from the Dockerfile in src/main/docker
+    app {
+        // The baseDir will be located in the build as other generated files will be needed as well
+        // and all files need to be placed inside this directory (or a subdirectory)
+        baseDir = file('build/docker-app/')
+
+        // Linking the the mongo container while specifying a custom alias
+        links = [ mongo.link("mongoalias") ]
+
+        // Passing in the environment variables using the mongo container
+        env = ['MONGO_HOST=mongoalias', 'MONGO_PORT=27017']
+
+        // Not only start the container, wait for it to finish
+        waitForCommand = true
+
+        // The container's stdout should be captured and redirected to System.in
+        attachStdout = true
+    }
+}
+
+// Prepare required files for building the app image and copy them to build/docker-app/
+task copyFilesToDockerBuildDir(type: Copy) {
+    from jar
+    from file('src/main/docker')
+    from configurations.runtime
+    into dcompose.app.baseDir
+}
+
+// Make sure that the copy task is executed before building the image
+buildAppImage {
+    dependsOn copyFilesToDockerBuildDir
+}
+
+test {
+    // Start the mongo test container before running the tests
+    dependsOn startMongoTestContainer
+
+    // Clean up the container after completing the test run
+    finalizedBy removeMongoTestContainer
+
+    doFirst {
+        // Pass in the configuration properties to the integration test so they can connect to the mongo test container
+        systemProperty 'mongo.host', dcompose.mongoTest.dockerHost
+        systemProperty 'mongo.port', dcompose.mongoTest.findHostPort(27017)
+    }
+    doLast {
+        // Clean up the dynamic system properties in order to not mess up the UP-TO-DATE checks
+        systemProperties.remove 'mongo.host'
+        systemProperties.remove 'mongo.port'
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.sample.MongoDbCounter'
+    }
+    from {
+        // Build a fat jar with all dependencies included
+        configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+// create a custom run task starting the app container and printing the resulting exit code
+task run {
+    dependsOn startAppContainer
+    doLast {
+        println "Java program successfully executed in docker container. Received exit code: $startAppContainer.exitCode"
+    }
+}
