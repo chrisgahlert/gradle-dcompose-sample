@@ -1,4 +1,4 @@
-# gradle-dcompose-plugin
+# gradle-dcompose-sample
 
 This sample project demonstrates the usage of the [gradle-dcompose-plugin](https://github.com/chrisgahlert/gradle-dcompose-plugin).
 
