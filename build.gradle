@@ -1,5 +1,5 @@
 plugins {
-    id "com.chrisgahlert.gradle-dcompose-plugin" version "0.4.0"
+    id "com.chrisgahlert.gradle-dcompose-plugin" version "0.4.1"
 }
 apply plugin: 'java'
 
