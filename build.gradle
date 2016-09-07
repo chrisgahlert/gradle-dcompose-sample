@@ -49,6 +49,11 @@ dcompose {
     }
 }
 
+// Make sure that the test DB container is always re-created (and therefore the old one is removed - if any)
+// This is particularly useful if the previous test run was aborted (e.g. by pressing CTRL + C) and
+// the test task's finalizer did not run.
+createMongoTestContainer.outputs.upToDateWhen { false }
+
 // Prepare required files for building the app image and copy them to build/docker-app/
 task copyFilesToDockerBuildDir(type: Copy) {
     from jar
