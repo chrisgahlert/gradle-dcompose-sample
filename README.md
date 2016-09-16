@@ -10,6 +10,7 @@ Checkout the project and run:
 * `./gradlew run` to start the Java app inside a docker container
 * `./gradlew test` to start the integration test using a MongoDB container
 * `./gradlew removeContainers` or `./gradlew removeImages` to clean everything up
+* `./gradlew createComposeFile` to create a `docker-compose.yml` file that can be used for deploying the app.
 
 ## Sample output
 

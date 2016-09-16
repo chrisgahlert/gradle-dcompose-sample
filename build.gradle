@@ -1,5 +1,5 @@
 plugins {
-    id "com.chrisgahlert.gradle-dcompose-plugin" version "0.4.2"
+    id "com.chrisgahlert.gradle-dcompose-plugin" version "0.5.0"
 }
 apply plugin: 'java'
 
@@ -16,17 +16,28 @@ dependencies {
 }
 
 dcompose {
-    // A mongo container with preserved volumes (used for running the app)
+    // define the available networks
+    networks {
+        frontend
+        backend
+    }
+
+    // A mongo service with preserved volumes (used for running the app)
     mongo {
         image = 'mongo:3.3.9'
         portBindings = ['27017']
         preserveVolumes = true
+        networks = [backend]
+        aliases = ['mongoalias']
     }
 
-    // A mongo container without preserved volumes (used for running integration tests)
+    // A mongo service without preserved volumes (used for running integration tests)
     mongoTest {
         image = 'mongo:3.3.9'
         portBindings = ['27017']
+
+        // Do not include this service in the docker-compose.yml (see task createComposeFile)
+        deploy = false
     }
 
     // The actual app image that will be built from the Dockerfile in src/main/docker
@@ -35,17 +46,18 @@ dcompose {
         // and all files need to be placed inside this directory (or a subdirectory)
         baseDir = file('build/docker-app/')
 
-        // Linking the the mongo container while specifying a custom alias
-        links = [ mongo.link("mongoalias") ]
+        // Define the networks this service is connected to
+        networks = [backend, frontend]
 
-        // Passing in the environment variables using the mongo container
+        // Passing in the environment variables for using the mongo service - host could be "mongo" or "mongoalias"
         env = ['MONGO_HOST=mongoalias', 'MONGO_PORT=27017']
 
         // Not only start the container, wait for it to finish
         waitForCommand = true
 
-        // The container's stdout should be captured and redirected to System.in
+        // The container's stdout should be captured and redirected to System.out
         attachStdout = true
+
     }
 }
 
