@@ -114,6 +114,6 @@ jar {
 task run {
     dependsOn startAppContainer
     doLast {
-        println "Java program successfully executed in docker container. Received exit code: $startAppContainer.exitCode"
+        println "Java program successfully executed in docker container. Received exit code: $dcompose.app.exitCode"
     }
 }
