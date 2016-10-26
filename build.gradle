@@ -69,7 +69,7 @@ dcompose {
 createMongoTestContainer.outputs.upToDateWhen { false }
 
 // Prepare required files for building the app image and copy them to build/docker-app/
-task copyFilesToDockerBuildDir(type: Copy) {
+task copyFilesToDockerBuildDir(type: Sync) {
     from jar
     from file('src/main/docker')
     from configurations.runtime
