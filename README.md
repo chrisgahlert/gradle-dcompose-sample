@@ -162,7 +162,7 @@ BUILD SUCCESSFUL
 Total time: 1.452 secs
 ```
 
-And the result file `build/docker-compose.yml`:
+And the resulting file `build/docker-compose.yml`:
 ```yaml
 version: '2'
 services:
