@@ -1,5 +1,5 @@
 plugins {
-    id "com.chrisgahlert.gradle-dcompose-plugin" version "0.7.0"
+    id "com.chrisgahlert.gradle-dcompose-plugin" version "0.8.0"
 }
 apply plugin: 'java'
 
@@ -20,6 +20,14 @@ dcompose {
     networks {
         frontend
         backend
+    }
+
+    // define special volumes
+    volumes {
+        logdata {
+            driver = 'local' // optional as it is the default driver
+            driverOpts = [:] // optional
+        }
     }
 
     // A mongo service with preserved volumes (used for running the app)
@@ -48,6 +56,12 @@ dcompose {
 
         // Define the networks this service is connected to
         networks = [backend, frontend]
+
+        // Define which volumes the container will have
+        volumes = ['/var/spool/app']
+
+        // Define special volume binds
+        binds = [logdata.bind('/var/log/app'), '/data/on/host:/var/spool/app']
 
         // Passing in the environment variables for using the mongo service - host could be "mongo" or "mongoalias"
         env = ['MONGO_HOST=mongoalias', 'MONGO_PORT=27017']
