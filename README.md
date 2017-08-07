@@ -11,12 +11,13 @@ Checkout the project and run:
 * `./gradlew test` to start the integration test using a MongoDB container
 * `./gradlew removeContainers` or `./gradlew removeImages` or `./gradlew removeNetworks` to clean everything up
 * `./gradlew createComposeFile` to create a `docker-compose.yml` file that can be used for deploying the app.
+* `./graldew removeContainers removeNetworks removeVolumes removeImages` to clean everything up 
 
 ## Sample output: run
 
 First run:
 ```shell
-macbook:gradle-dcompose-sample $ gradle run
+macbook:gradle-dcompose-sample $ ./gradlew run
 :compileJava UP-TO-DATE
 :processResources UP-TO-DATE
 :classes UP-TO-DATE
@@ -54,7 +55,7 @@ Total time: 32.334 secs
 
 Second run:
 ```shell
-macbook:gradle-dcompose-sample $ gradle run
+macbook:gradle-dcompose-sample $ ./gradlew run
 :compileJava UP-TO-DATE
 :processResources UP-TO-DATE
 :classes UP-TO-DATE
@@ -86,7 +87,7 @@ Total time: 2.878 secs
 
 First run:
 ```shell
-macbook:gradle-dcompose-sample $ gradle cleanTest test
+macbook:gradle-dcompose-sample $ ./gradlew cleanTest test
 :cleanTest UP-TO-DATE
 :compileJava UP-TO-DATE
 :processResources UP-TO-DATE
@@ -117,7 +118,7 @@ Total time: 26.278 secs
 
 Second run:
 ```shell
-macbook:gradle-dcompose-sample $ gradle cleanTest test
+macbook:gradle-dcompose-sample $ ./gradlew cleanTest test
 :cleanTest
 :compileJava UP-TO-DATE
 :processResources UP-TO-DATE
@@ -146,7 +147,7 @@ Total time: 3.095 secs
 ## Sample output: createComposeFile
 
 ```shell
-macbook:gradle-dcompose-sample $ gradle createComposeFile
+macbook:gradle-dcompose-sample $ ./gradlew createComposeFile
 :compileJava UP-TO-DATE
 :processResources UP-TO-DATE
 :classes UP-TO-DATE
@@ -193,4 +194,59 @@ networks:
 volumes:
   mongo__dataDb: {}
   mongo__dataConfigdb: {}
+```
+
+## Sample output: removeContainers removeNetworks removeVolumes removeImages
+
+First run:
+
+```shell
+macbook:gradle-dcompose-sample $ ./gradlew removeContainers removeNetworks removeVolumes removeImages
+:stopAppContainer SKIPPED
+:removeAppContainer SKIPPED
+:stopMongoContainer SKIPPED
+:removeMongoContainer SKIPPED
+:stopMongoTestContainer SKIPPED
+:removeMongoTestContainer SKIPPED
+:removeContainers UP-TO-DATE
+:removeBackendNetwork
+:removeDefaultNetwork
+:removeFrontendNetwork
+:removeNetworks
+:removeLogdataVolume
+:removeVolumes
+:removeAppImage
+Successfully removed image dcomposec10023c3/app:latest
+:removeMongoImage
+Successfully removed image mongo:3.3.9
+:removeMongoTestImage SKIPPED
+:removeImages
+
+BUILD SUCCESSFUL in 3s
+6 actionable tasks: 6 executed
+```
+
+Second run:
+
+```shell
+macbook:gradle-dcompose-sample $ ./gradlew removeContainers removeNetworks removeVolumes removeImages
+:stopAppContainer SKIPPED
+:removeAppContainer SKIPPED
+:stopMongoContainer SKIPPED
+:removeMongoContainer SKIPPED
+:stopMongoTestContainer SKIPPED
+:removeMongoTestContainer SKIPPED
+:removeContainers UP-TO-DATE
+:removeBackendNetwork SKIPPED
+:removeDefaultNetwork SKIPPED
+:removeFrontendNetwork SKIPPED
+:removeNetworks UP-TO-DATE
+:removeLogdataVolume SKIPPED
+:removeVolumes UP-TO-DATE
+:removeAppImage SKIPPED
+:removeMongoImage SKIPPED
+:removeMongoTestImage SKIPPED
+:removeImages UP-TO-DATE
+
+BUILD SUCCESSFUL in 2s
 ```
