@@ -9,7 +9,6 @@ It is a simple counter that uses a MongoDB server to count how many times it has
 Checkout the project and run:
 * `./gradlew run` to start the Java app inside a docker container
 * `./gradlew test` to start the integration test using a MongoDB container
-* `./gradlew removeContainers` or `./gradlew removeImages` or `./gradlew removeNetworks` to clean everything up
 * `./gradlew createComposeFile` to create a `docker-compose.yml` file that can be used for deploying the app.
 * `./graldew removeContainers removeNetworks removeVolumes removeImages` to clean everything up 
 
