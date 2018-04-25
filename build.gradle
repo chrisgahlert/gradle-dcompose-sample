@@ -1,5 +1,5 @@
 plugins {
-    id "com.chrisgahlert.gradle-dcompose-plugin" version "0.9.1"
+    id "com.chrisgahlert.gradle-dcompose-plugin" version "0.10.0-alpha1"
 }
 apply plugin: 'java'
 
@@ -50,9 +50,14 @@ dcompose {
 
     // The actual app image that will be built from the Dockerfile in src/main/docker
     app {
-        // The baseDir will be located in the build as other generated files will be needed as well
-        // and all files need to be placed inside this directory (or a subdirectory)
-        baseDir = file('build/docker-app/')
+        // When building this image, the following files are required and will be copied to
+        // the directory "$buildDir/dcompose-build/app" before the image is built. It will
+        // automatically honor the task dependencies brought in from the 'jar' task.
+        buildFiles = project.copySpec {
+            from jar
+            from file('src/main/docker')
+            from configurations.runtime
+        }
 
         // Define the networks this service is connected to
         networks = [backend, frontend]
@@ -81,19 +86,6 @@ dcompose {
 // This is particularly useful if the previous test run was aborted (e.g. by pressing CTRL + C) and
 // the test task's finalizer did not run.
 createMongoTestContainer.outputs.upToDateWhen { false }
-
-// Prepare required files for building the app image and copy them to build/docker-app/
-task copyFilesToDockerBuildDir(type: Sync) {
-    from jar
-    from file('src/main/docker')
-    from configurations.runtime
-    into dcompose.app.baseDir
-}
-
-// Make sure that the copy task is executed before building the image
-buildAppImage {
-    dependsOn copyFilesToDockerBuildDir
-}
 
 test {
     // Start the mongo test container before running the tests
