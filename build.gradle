@@ -1,5 +1,5 @@
 plugins {
-    id "com.chrisgahlert.gradle-dcompose-plugin" version "0.10.0"
+    id "com.chrisgahlert.gradle-dcompose-plugin" version "0.14.0"
 }
 apply plugin: 'java'
 
@@ -65,8 +65,8 @@ dcompose {
         // Define which volumes the container will have
         volumes = ['/var/spool/app']
 
-        // Define special volume binds
-        binds = [logdata.bind('/var/log/app'), '/data/on/host:/var/spool/app']
+        // Define special volume binds (disabled, as this often doesn't work, depending on your Docker setup)
+        //binds = [logdata.bind('/var/log/app'), project.projectDir.path + ':/var/spool/app']
 
         // Passing in the environment variables for using the mongo service - host could be "mongo" or "mongoalias"
         env = ['MONGO_HOST=mongoalias', 'MONGO_PORT=27017']
@@ -122,4 +122,8 @@ task run {
     doLast {
         println "Java program successfully executed in docker container. Received exit code: $dcompose.app.exitCode"
     }
+}
+
+createComposeFile {
+    useTags = true // we do not want to push the image, in order to use the image digest. Instead we rely on tags...
 }
