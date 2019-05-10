@@ -4,7 +4,7 @@ This sample project demonstrates the usage of the [gradle-dcompose-plugin](https
 
 It is a simple counter that uses a MongoDB server to count how many times it has been called.
 
-**See the [build.gradle](/chrisgahlert/gradle-dcompose-sample/blob/master/build.gradle) file for more details!**
+**See the [build.gradle](build.gradle) file for more details!**
 
 ## Usage
 
