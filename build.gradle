@@ -1,5 +1,5 @@
 plugins {
-    id "com.chrisgahlert.gradle-dcompose-plugin" version "0.14.1"
+    id "com.chrisgahlert.gradle-dcompose-plugin" version "0.15.0"
 }
 apply plugin: 'java'
 
@@ -88,10 +88,10 @@ createMongoTestContainer.outputs.upToDateWhen { false }
 
 test {
     // Start the mongo test container before running the tests
-    dependsOn startMongoTestContainer
+    dependsOn dcompose.mongoTest
 
     // Clean up the container after completing the test run
-    finalizedBy removeMongoTestContainer
+    finalizedBy dcompose.mongoTest.removeContainerTaskName
 
     doFirst {
         // Pass in the configuration properties to the integration test so they can connect to the mongo test container
@@ -117,7 +117,7 @@ jar {
 
 // create a custom run task starting the app container and printing the resulting exit code
 task run {
-    dependsOn startAppContainer
+    dependsOn dcompose.app
     doLast {
         println "Java program successfully executed in docker container. Received exit code: $dcompose.app.exitCode"
     }
