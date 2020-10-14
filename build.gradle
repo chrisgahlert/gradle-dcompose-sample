@@ -10,8 +10,8 @@ repositories {
 }
 
 dependencies {
-    compile 'org.mongodb:mongo-java-driver:3.0.0'
-    testCompile 'junit:junit:4.12'
+    implementation 'org.mongodb:mongo-java-driver:3.0.0'
+    testImplementation 'junit:junit:4.12'
 }
 
 dcompose {
@@ -55,7 +55,7 @@ dcompose {
         buildFiles = project.copySpec {
             from jar
             from file('src/main/docker')
-            from configurations.runtime
+            from configurations.runtimeClasspath
         }
 
         // Define the networks this service is connected to
@@ -114,7 +114,7 @@ jar {
     }
     from {
         // Build a fat jar with all dependencies included
-        configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
