@@ -1,5 +1,5 @@
 plugins {
-    id "com.chrisgahlert.gradle-dcompose-plugin" version "0.17.0"
+    id "com.chrisgahlert.gradle-dcompose-plugin" version "0.17.1"
 }
 apply plugin: 'java'
 
@@ -15,6 +15,12 @@ dependencies {
 }
 
 dcompose {
+    // Set properties for all services yet to be defined - also works with networks/volumes
+    services.all {
+        // Write the docker build logs to the following file
+        buildLogFile = file("$buildDir/buildlogs/${name}.log")
+    }
+    
     // define the available networks
     networks {
         frontend
